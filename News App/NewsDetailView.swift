@@ -2,7 +2,7 @@
 //  NewsDetailView.swift
 //  News App
 //
-//  Created by Aashish Kapoor on 10/15/24.
+//  Created by Aashish Kapoor on 10/1/24.
 //
 
 
@@ -10,16 +10,16 @@ import SwiftUI
 
 struct NewsDetailView: View {
     
-    var article: NewsArticle
+    @State var article: NewsArticle
     
     @StateObject private var predictionViewModel = NewsPredictionViewModel()
     @State private var imageReloadKey = UUID()
 
     var body: some View {
+        
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                // Article Image
-                if let imageUrl = article.urlToImage, let url = URL(string: imageUrl) {
+                if let imageUrl = article.image, let url = URL(string: imageUrl) {
                     AsyncImage(url: url, transaction: Transaction(animation: .easeInOut)) { phase in
                         switch phase {
                         case .empty:
@@ -44,12 +44,12 @@ struct NewsDetailView: View {
                             EmptyView()
                         }
                     }
-                    //To make sure the image loads each time I added this
+                    //To make sure the image loads each time
                     .id(imageReloadKey)
                     .frame(maxWidth: .infinity)
                 }
                 
-                // Article Information (Author and Date)
+                
                 Group {
                     Text(article.title)
                         .font(.title)
@@ -60,7 +60,7 @@ struct NewsDetailView: View {
                             .foregroundColor(.secondary)
                             .padding(.bottom, 4)
                     }
-                    if let formattedDate = formatPublishedDate(article.publishedAt) {
+                    if let formattedDate = formatPublishedDate(article.published) {
                         Text("Published on \(formattedDate)")
                             .font(.footnote)
                             .foregroundColor(.secondary)
@@ -77,15 +77,6 @@ struct NewsDetailView: View {
                         .padding(.top, 8)
                         .transition(.opacity)
                 }
-                
-                if let content = article.content {
-                    // Limit the content to 200 characters and add ellipsis
-                    let truncatedContent = content.prefix(200)
-                    
-                    Text(truncatedContent)
-                        .font(.body.weight(.light))
-                }
-
 
 
                 // Link to the full article
@@ -106,6 +97,9 @@ struct NewsDetailView: View {
             }
             .padding()
         }
+      
+            
+        
         .background(Color(.systemBackground).ignoresSafeArea())
         .navigationTitle("News Article")
         .onAppear {
@@ -123,7 +117,7 @@ struct NewsDetailView: View {
         .animation(.easeInOut, value: predictionViewModel.isLoading)
     }
     
-    // Prediction section with real/fake news indicator
+    // THis is where we are checking to see whether or not a given news article is fake or real based on the models prediction and confidence level.
     @ViewBuilder
     private var predictionSection: some View {
         if predictionViewModel.isLoading {
@@ -176,5 +170,5 @@ struct NewsDetailView: View {
 }
 
 #Preview {
-    NewsDetailView(article: NewsArticle(source: Source(id: "1", name: "Numus"), author: "Numus Wamak", title: "Inspirational Kentucky", description: "That one only", url: "https://bankofamerica.com", urlToImage: "https://apple.com/favicon.ico", publishedAt: "Now", content: "A paw paw paw paw patrol"))
+    NewsDetailView(article: NewsArticle(title: "Test Article", description: "This is he description", url: "https://google.com", published: "Yesterday", author: "Namas", image: ""))
 }
